@@ -17,6 +17,7 @@ public class PlayerMovementSM : MonoBehaviour
     PlayerController _controller;
     PlayerInputs _inputs;
     PlayerStealthSM _stealthSM;
+    Animator _animator;
 
 #region Public properties
 
@@ -28,6 +29,7 @@ public class PlayerMovementSM : MonoBehaviour
 
     private void Start()
     {
+        _animator = GetComponentInChildren<Animator>();
         _stealthSM = GetComponent<PlayerStealthSM>();
         _inputs = GetComponent<PlayerInputs>();
         _controller = GetComponent<PlayerController>();
@@ -130,7 +132,7 @@ public class PlayerMovementSM : MonoBehaviour
 
     private void OnEnterIdle()
     {
-
+        _animator.SetBool("Idle", true);
     }
     private void OnUpdateIdle()
     {
@@ -150,6 +152,7 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitIdle()
     {
+        _animator.SetBool("Idle", false);
     }
 
 #endregion
@@ -158,7 +161,7 @@ public class PlayerMovementSM : MonoBehaviour
 
     private void OnEnterWalking()
     {
-
+        _animator.SetBool("Walking", true);
     }
     private void OnUpdateWalking()
     {
@@ -177,6 +180,7 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitWalking()
     {
+        _animator.SetBool("Walking", false);
     }
 
 #endregion
@@ -185,6 +189,7 @@ public class PlayerMovementSM : MonoBehaviour
 
     private void OnEnterSprinting()
     {
+        _animator.SetBool("Sprinting", true);
     }
     private void OnUpdateSprinting()
     {
@@ -202,6 +207,7 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitSprinting()
     {
+        _animator.SetBool("Sprinting", false);
     }
 
 #endregion

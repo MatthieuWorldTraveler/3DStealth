@@ -19,6 +19,7 @@ public class PlayerAirSM : MonoBehaviour
     PlayerInputs _inputs;
     PlayerStealthSM _stealthSM;
     PlayerController _controller;
+    Animator _animator;
 
 #region Public properties
 
@@ -33,6 +34,7 @@ public class PlayerAirSM : MonoBehaviour
         _controller = GetComponent<PlayerController>();
         _inputs = GetComponent<PlayerInputs>();
         _stealthSM = GetComponent<PlayerStealthSM>();
+        _animator = GetComponentInChildren<Animator>();
     }
     private void Update()
     {
@@ -178,6 +180,8 @@ public class PlayerAirSM : MonoBehaviour
 
     private void OnEnterAnticipating()
     {
+        _animator.SetBool("Anticipating", true);
+
         // Start Anticipate
         _controller.StartAnticipate();
     }
@@ -196,6 +200,7 @@ public class PlayerAirSM : MonoBehaviour
     }
     private void OnExitAnticipating()
     {
+        _animator.SetBool("Anticipating", false);
     }
 
 #endregion
@@ -204,6 +209,8 @@ public class PlayerAirSM : MonoBehaviour
 
     private void OnEnterJumping()
     {
+        _animator.SetBool("Jumping", true);
+
         _controller.StartJump();
     }
     private void OnUpdateJumping()
@@ -222,6 +229,7 @@ public class PlayerAirSM : MonoBehaviour
     }
     private void OnExitJumping()
     {
+        _animator.SetBool("Jumping", false);
     }
 
 #endregion
@@ -230,6 +238,7 @@ public class PlayerAirSM : MonoBehaviour
 
     private void OnEnterFalling()
     {
+        _animator.SetBool("Falling", true);
     }
     private void OnUpdateFalling()
     {
@@ -245,6 +254,7 @@ public class PlayerAirSM : MonoBehaviour
     }
     private void OnExitFalling()
     {
+        _animator.SetBool("Falling", false);
     }
 
 #endregion
@@ -253,6 +263,8 @@ public class PlayerAirSM : MonoBehaviour
 
     private void OnEnterRecovery()
     {
+        _animator.SetBool("Recovering", true);
+
         // Start Recovery
         _controller.StartRecovery();
     }
@@ -269,6 +281,7 @@ public class PlayerAirSM : MonoBehaviour
     }
     private void OnExitRecovery()
     {
+        _animator.SetBool("Recovering", false);
     }
 
 #endregion

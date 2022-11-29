@@ -15,6 +15,8 @@ public class PlayerStealthSM : MonoBehaviour
     private PlayerStealth _currentState;
     PlayerAirSM _playerAirSM;
     PlayerInputs _inputs;
+    PlayerController _controller;
+    Animator _animator;
 
     #region Public properties
 
@@ -28,6 +30,8 @@ public class PlayerStealthSM : MonoBehaviour
     {
         _playerAirSM = GetComponent<PlayerAirSM>();
         _inputs = GetComponent<PlayerInputs>();
+        _controller = GetComponent<PlayerController>();
+        _animator = GetComponentInChildren<Animator>();
     }
     private void Update()
     {
@@ -135,10 +139,12 @@ public class PlayerStealthSM : MonoBehaviour
 
     private void OnEnterSneaking()
     {
+        _animator.SetBool("Sneaking", true);
     }
     private void OnUpdateSneaking()
     {
         // Do Sneak
+        _controller.DoSneak();
 
         // Transitions
         if (!_inputs.AskingSneaking || _playerAirSM.CurrentState == PlayerAir.FALLING)
@@ -149,6 +155,7 @@ public class PlayerStealthSM : MonoBehaviour
     }
     private void OnExitSneaking()
     {
+        _animator.SetBool("Sneaking", false);
     }
 
     #endregion

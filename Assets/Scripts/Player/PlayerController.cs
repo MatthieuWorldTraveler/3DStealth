@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [Space(10)]
     [SerializeField] float _moveSpeed = 5f;
     [SerializeField] float _sprintSpeed = 8f;
+    [SerializeField] float _sneakSpeed = .5f;
 
     [Header("Jump Manager")]
     [Space(10)]
@@ -31,10 +32,8 @@ public class PlayerController : MonoBehaviour
     PlayerInputs _inputs;
     Transform _transform;
     Camera _camera;
+    Animator _animator;
     Vector3 playerVelocity;
-    
-    // Const
-    const float gravityValue = -9.81f;
 
     // Public Proprieties
     public bool IsGrounded { get { return _controller.isGrounded; } }
@@ -44,6 +43,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        _animator = GetComponentInChildren<Animator>();
         _camera = Camera.main;
         _transform = transform;
         _inputs = GetComponent<PlayerInputs>();
@@ -54,6 +54,8 @@ public class PlayerController : MonoBehaviour
     {
         _ySpeed += Physics.gravity.y * Time.deltaTime;
         _controller.Move(ApplyMovement());
+        _animator.SetFloat("VerticalDegrees", GetVerticalDirection());
+        _animator.SetFloat("HorizontalInput", Input.GetAxisRaw("Mouse Y"));
     }
 
     public void DoWalk()
@@ -69,10 +71,14 @@ public class PlayerController : MonoBehaviour
 
     public void StartJump()
     {
-        _ySpeed = Mathf.Sqrt(_jumpHeight * -3.0f * gravityValue);
+        _ySpeed = Mathf.Sqrt(_jumpHeight * -3.0f * Physics.gravity.y);
     }
 
     public void DoJump()
+    {
+
+    }
+    public void DoFall()
     {
 
     }
@@ -88,9 +94,10 @@ public class PlayerController : MonoBehaviour
     {
         _anticipationEndTimer = Time.time + _anticipationTimer;
     }
-    public void DoFall()
+    public void DoSneak()
     {
-
+        _controller.Move(GetMoveDir(_sneakSpeed));
+        ApplyPlayerRotation();
     }
 
     /// <summary>
@@ -100,8 +107,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 GetMoveDir(float speed)
     {
         moveDir = new Vector3(0, moveDir.y, 0);
-        moveDir += _transform.forward * _inputs.Movement.x * speed * Time.deltaTime;
-        moveDir += _transform.right * _inputs.Movement.z * speed * Time.deltaTime;
+        moveDir += _transform.forward * _inputs.ClampedMovement.x * speed * Time.deltaTime;
+        moveDir += _transform.right * _inputs.ClampedMovement.z * speed * Time.deltaTime;
         return moveDir;
     }
 
@@ -114,7 +121,15 @@ public class PlayerController : MonoBehaviour
     private void ApplyPlayerRotation()
     {
         Quaternion cameraRotation = Quaternion.LookRotation(_camera.transform.forward);
-        Quaternion rotateToward = Quaternion.RotateTowards(_transform.rotation., cameraRotation, _degreeRotationSpeed * Time.deltaTime);
-        //_transform.rotation = new Vector3(rotateToward, _transform.rotation.y, _transform.rotation.z);
+        Vector3 rotateToward = Quaternion.RotateTowards(_transform.rotation, cameraRotation, _degreeRotationSpeed * Time.deltaTime).eulerAngles;
+        rotateToward.z = rotateToward.x = 0;
+        _transform.rotation = Quaternion.Euler(rotateToward);
+    }
+
+    private float GetVerticalDirection()
+    {
+        //float verticalDir = (180 / Mathf.PI) * Mathf.Atan2(_transform.forward.y - _camera.transform.forward.y, _transform.forward.x - _camera.transform.forward.x);
+        float verticalDir = Vector3.Angle(transform.forward, _camera.transform.forward);
+        return verticalDir;
     }
 }
