@@ -128,9 +128,11 @@ public class PlayerStealthSM : MonoBehaviour
     }
     private void OnFixedUpdateStanding()
     {
+
     }
     private void OnExitStanding()
     {
+
     }
 
     #endregion
@@ -139,12 +141,11 @@ public class PlayerStealthSM : MonoBehaviour
 
     private void OnEnterSneaking()
     {
-        _animator.SetBool("Sneaking", true);
+        _controller.StartSneak();
     }
     private void OnUpdateSneaking()
     {
-        // Do Sneak
-        _controller.DoSneak();
+        // Do Nothing
 
         // Transitions
         if (!_inputs.AskingSneaking || _playerAirSM.CurrentState == PlayerAir.FALLING)
@@ -155,7 +156,7 @@ public class PlayerStealthSM : MonoBehaviour
     }
     private void OnExitSneaking()
     {
-        _animator.SetBool("Sneaking", false);
+        _controller.ExitSneak();
     }
 
     #endregion

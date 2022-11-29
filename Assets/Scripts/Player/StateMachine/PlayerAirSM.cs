@@ -216,7 +216,7 @@ public class PlayerAirSM : MonoBehaviour
     private void OnUpdateJumping()
     {
         // Do Jump
-        _controller.DoJump();
+        
 
         // Transitions
         if (_controller.IsGrounded)
@@ -243,7 +243,7 @@ public class PlayerAirSM : MonoBehaviour
     private void OnUpdateFalling()
     {
         // Do Fall
-        _controller.DoFall();
+        
 
         // Transitions
         if (_controller.IsGrounded)

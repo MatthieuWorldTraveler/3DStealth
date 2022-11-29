@@ -7,9 +7,9 @@ public class PlayerController : MonoBehaviour
     // Serialized
     [Header("Movement Manager")]
     [Space(10)]
-    [SerializeField] float _moveSpeed = 5f;
-    [SerializeField] float _sprintSpeed = 8f;
-    [SerializeField] float _sneakSpeed = .5f;
+    [SerializeField] float _moveSpeed = 2f;
+    [SerializeField] float _sprintSpeed = 5f;
+    [SerializeField] float _sneakMultiplierSpeed = .5f;
 
     [Header("Jump Manager")]
     [Space(10)]
@@ -21,11 +21,16 @@ public class PlayerController : MonoBehaviour
     [Space(10)]
     [SerializeField] int _degreeRotationSpeed = 25;
 
+    [Header("Animator Manager")]
+    [Space(10)]
+    [SerializeField] float _smoothTime = 0.3f;
+
     // variables
     float _anticipationEndTimer;
     float _recoveryEndTimer;
     float _ySpeed;
     Vector3 moveDir = Vector3.zero;
+    float _sneakSpeed = 1f;
 
     // References
     CharacterController _controller;
@@ -35,11 +40,18 @@ public class PlayerController : MonoBehaviour
     Animator _animator;
     Vector3 playerVelocity;
 
+    // Animator transition variables
+    Vector2 _currentDir = Vector2.zero;
+    float _yVelocity = 0;
+    float _xVelocity = 0;
+
     // Public Proprieties
     public bool IsGrounded { get { return _controller.isGrounded; } }
     public bool IsAnticipationOver { get { return Time.time > _anticipationEndTimer; } }
     public bool IsRecoveryOver { get { return Time.time > _recoveryEndTimer; } }
     public float PlayerVelocityYAxis { get { return _controller.velocity.y; } }
+
+    public float SneakSpeedAnim { get { return _sneakSpeed == 1 ? 1 : -1; } }
 
     private void Awake()
     {
@@ -52,52 +64,89 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        _ySpeed += Physics.gravity.y * Time.deltaTime;
-        _controller.Move(ApplyMovement());
-        _animator.SetFloat("VerticalDegrees", GetVerticalDirection());
-        _animator.SetFloat("HorizontalInput", Input.GetAxisRaw("Mouse Y"));
+        ApplyGravity();
+
+        ApplyAnimator();
     }
 
+    // Manually set the gravity for Player
+    private void ApplyGravity()
+    {
+        _ySpeed += Physics.gravity.y * Time.deltaTime;
+        _controller.Move(ApplyMovement());
+    }
+
+    // SmoothDamp the input for fluid transitions
+    private void ApplyAnimator()
+    {
+        if (_inputs.HasMovement)
+        {
+            Vector2 targetDir = new Vector2(_inputs.Movement.x, _inputs.Movement.z);
+
+            // Fix The smoothDamp 0 bug
+            if (targetDir.x == 0)
+                targetDir.x += .1f;
+            if (targetDir.y == 0)
+                targetDir.y += .1f;
+
+
+            _currentDir.x = Mathf.SmoothDamp(_currentDir.x, targetDir.x, ref _xVelocity, _smoothTime);
+            _currentDir.y = Mathf.SmoothDamp(_currentDir.y, targetDir.y, ref _yVelocity, _smoothTime);          
+        }
+
+        _animator.SetFloat("XInput", _currentDir.x);
+        _animator.SetFloat("ZInput", _currentDir.y);
+    }
+
+    // Apply Walk Movement
     public void DoWalk()
     {
-        _controller.Move(GetMoveDir(_moveSpeed));
+        _controller.Move(GetMoveDir(_moveSpeed * _sneakSpeed));
+        playerVelocity = new Vector3(_controller.velocity.x, 0, _controller.velocity.z);
         ApplyPlayerRotation();
     }
+
+    // Apply Spint Movement
     public void DoSprint()
     {
         _controller.Move(GetMoveDir(_sprintSpeed));
+        playerVelocity = new Vector3(_controller.velocity.x, 0, _controller.velocity.z);
         ApplyPlayerRotation();
     }
 
+    // Apply ySpeed for Jump counter gravity
     public void StartJump()
     {
         _ySpeed = Mathf.Sqrt(_jumpHeight * -3.0f * Physics.gravity.y);
     }
 
-    public void DoJump()
-    {
-
-    }
-    public void DoFall()
-    {
-
-    }
+    // Apply ySpeed to stop gravity
     public void DoGrounded()
     {
         _ySpeed = -.5f;
     }
+
+    // Initialize Recovery Timer
     public void StartRecovery()
     {
         _recoveryEndTimer = Time.time + _recoveryTimer;
     }
+
+    // Initialize Anticipating Timer
     public void StartAnticipate()
     {
         _anticipationEndTimer = Time.time + _anticipationTimer;
     }
-    public void DoSneak()
+
+    // Apply Sneak Multiplier
+    public void StartSneak()
     {
-        _controller.Move(GetMoveDir(_sneakSpeed));
-        ApplyPlayerRotation();
+        _sneakSpeed = _sneakMultiplierSpeed;
+    }
+    // reset Sneak Multiplier
+    public void ExitSneak()
+    {
+        _sneakSpeed = 1f;
     }
 
     /// <summary>
@@ -112,24 +161,19 @@ public class PlayerController : MonoBehaviour
         return moveDir;
     }
 
+    // Apply Artificiate gravity on each frame
     private Vector3 ApplyMovement()
     {
         moveDir = _transform.up * _ySpeed * Time.deltaTime;
         return moveDir;
     }
 
+    // Apply rotation only when moving
     private void ApplyPlayerRotation()
     {
         Quaternion cameraRotation = Quaternion.LookRotation(_camera.transform.forward);
         Vector3 rotateToward = Quaternion.RotateTowards(_transform.rotation, cameraRotation, _degreeRotationSpeed * Time.deltaTime).eulerAngles;
         rotateToward.z = rotateToward.x = 0;
         _transform.rotation = Quaternion.Euler(rotateToward);
-    }
-
-    private float GetVerticalDirection()
-    {
-        //float verticalDir = (180 / Mathf.PI) * Mathf.Atan2(_transform.forward.y - _camera.transform.forward.y, _transform.forward.x - _camera.transform.forward.x);
-        float verticalDir = Vector3.Angle(transform.forward, _camera.transform.forward);
-        return verticalDir;
     }
 }

@@ -132,18 +132,18 @@ public class PlayerMovementSM : MonoBehaviour
 
     private void OnEnterIdle()
     {
-        _animator.SetBool("Idle", true);
     }
     private void OnUpdateIdle()
     {
         // Do Nothing on idle
+        _animator.SetFloat("Speed", 0.1f, .2f, Time.deltaTime);
 
         // Transitions
         if(_inputs.HasMovement)
         {
             if (_inputs.AskingRunning && _stealthSM.CurrentState != PlayerStealth.SNEAKING)
                 TransitionToState(PlayerMovement.SPRINTING);
-            else if (!_inputs.AskingRunning)
+            else
                 TransitionToState(PlayerMovement.WALKING);
         }
     }
@@ -152,7 +152,6 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitIdle()
     {
-        _animator.SetBool("Idle", false);
     }
 
 #endregion
@@ -161,11 +160,11 @@ public class PlayerMovementSM : MonoBehaviour
 
     private void OnEnterWalking()
     {
-        _animator.SetBool("Walking", true);
     }
     private void OnUpdateWalking()
     {
         // Do walk
+        _animator.SetFloat("Speed", 1 * _controller.SneakSpeedAnim, .2f, Time.deltaTime);
         _controller.DoWalk();
 
         // Transitions
@@ -180,7 +179,6 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitWalking()
     {
-        _animator.SetBool("Walking", false);
     }
 
 #endregion
@@ -189,11 +187,12 @@ public class PlayerMovementSM : MonoBehaviour
 
     private void OnEnterSprinting()
     {
-        _animator.SetBool("Sprinting", true);
+
     }
     private void OnUpdateSprinting()
     {
         // Do Sprint
+        _animator.SetFloat("Speed", 2, .2f, Time.deltaTime);
         _controller.DoSprint();
 
         // Transitions
@@ -207,7 +206,6 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitSprinting()
     {
-        _animator.SetBool("Sprinting", false);
     }
 
 #endregion
