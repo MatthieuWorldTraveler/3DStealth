@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    #region Variables / Proprieties
     // Serialized
     [Header("Movement Manager")]
     [Space(10)]
@@ -13,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump Manager")]
     [Space(10)]
-    [SerializeField]  float _jumpHeight = 1.0f;
+    [SerializeField] float _jumpHeight = 1.0f;
     [SerializeField] float _anticipationTimer = .2f;
     [SerializeField] float _recoveryTimer = .2f;
 
@@ -38,7 +39,6 @@ public class PlayerController : MonoBehaviour
     Transform _transform;
     Camera _camera;
     Animator _animator;
-    Vector3 playerVelocity;
 
     // Animator transition variables
     Vector2 _currentDir = Vector2.zero;
@@ -51,7 +51,8 @@ public class PlayerController : MonoBehaviour
     public bool IsRecoveryOver { get { return Time.time > _recoveryEndTimer; } }
     public float PlayerVelocityYAxis { get { return _controller.velocity.y; } }
 
-    public float SneakSpeedAnim { get { return _sneakSpeed == 1 ? 1 : .5f; } }
+    //public float SneakSpeedAnim { get { return _sneakSpeed == 1 ? 1 : .5f; } } 
+    #endregion
 
     private void Awake()
     {
@@ -83,12 +84,13 @@ public class PlayerController : MonoBehaviour
         {
             Vector2 targetDir = new Vector2(_inputs.Movement.x, _inputs.Movement.z);
 
+            #region Fix SmoothDamp 0 bug
             // Fix The smoothDamp 0 bug
             if (targetDir.x == 0)
                 targetDir.x += .1f;
             if (targetDir.y == 0)
-                targetDir.y += .1f;
-
+                targetDir.y += .1f; 
+            #endregion
 
             _currentDir.x = Mathf.SmoothDamp(_currentDir.x, targetDir.x, ref _xVelocity, _smoothTime);
             _currentDir.y = Mathf.SmoothDamp(_currentDir.y, targetDir.y, ref _yVelocity, _smoothTime);          
@@ -102,7 +104,6 @@ public class PlayerController : MonoBehaviour
     public void DoWalk()
     {
         _controller.Move(GetMoveDir(_moveSpeed * _sneakSpeed));
-        playerVelocity = new Vector3(_controller.velocity.x, 0, _controller.velocity.z);
         ApplyPlayerRotation();
     }
 
@@ -110,7 +111,6 @@ public class PlayerController : MonoBehaviour
     public void DoSprint()
     {
         _controller.Move(GetMoveDir(_sprintSpeed));
-        playerVelocity = new Vector3(_controller.velocity.x, 0, _controller.velocity.z);
         ApplyPlayerRotation();
     }
 
@@ -143,7 +143,8 @@ public class PlayerController : MonoBehaviour
     {
         _sneakSpeed = _sneakMultiplierSpeed;
     }
-    // reset Sneak Multiplier
+
+    // reset Sneak speed Multiplier
     public void ExitSneak()
     {
         _sneakSpeed = 1f;

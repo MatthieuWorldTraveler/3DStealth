@@ -19,13 +19,15 @@ public class PlayerMovementSM : MonoBehaviour
     PlayerStealthSM _stealthSM;
     Animator _animator;
 
-#region Public properties
+    float _layerTest;
+
+    #region Public properties
 
     public PlayerMovement CurrentState { get => _currentState; private set => _currentState = value; }
 
-#endregion
+    #endregion
 
-#region Unity Life Cycles
+    #region Unity Life Cycles
 
     private void Start()
     {
@@ -43,9 +45,9 @@ public class PlayerMovementSM : MonoBehaviour
         OnStateFixedUpdate(CurrentState);
     }
 
-#endregion
+    #endregion
 
-#region State Machine
+    #region State Machine
 
     private void OnStateEnter(PlayerMovement state)
     {
@@ -126,20 +128,24 @@ public class PlayerMovementSM : MonoBehaviour
         OnStateEnter(toState);
     }
 
-#endregion
+    #endregion
 
-#region State IDLE
+    #region State IDLE
 
     private void OnEnterIdle()
     {
+        _animator.SetBool("HasMovement", false);
     }
     private void OnUpdateIdle()
     {
-        // Do Nothing on idle
-        _animator.SetFloat("Speed", 0.1f, .1f, Time.deltaTime);
+        ////_animator.SetFloat("Speed", 0.1f, .1f, Time.deltaTime);
+        float i = Mathf.SmoothDamp(_animator.GetLayerWeight(2), 0, ref _layerTest, .2f);
+        _animator.SetLayerWeight(2, i);
 
+        // Do Nothing on idle
+        
         // Transitions
-        if(_inputs.HasMovement)
+        if (_inputs.HasMovement)
         {
             if (_inputs.AskingRunning && _stealthSM.CurrentState != PlayerStealth.SNEAKING)
                 TransitionToState(PlayerMovement.SPRINTING);
@@ -152,19 +158,23 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitIdle()
     {
+        _animator.SetBool("HasMovement", true);
     }
 
-#endregion
+    #endregion
 
-#region State WALKING
-
+    #region State WALKING
     private void OnEnterWalking()
     {
+
     }
     private void OnUpdateWalking()
     {
+        ////_animator.SetFloat("Speed", 1 * _controller.SneakSpeedAnim, .1f, Time.deltaTime);
+        float i = Mathf.SmoothDamp(_animator.GetLayerWeight(2), 0, ref _layerTest, .2f);
+        _animator.SetLayerWeight(2, i);
+
         // Do walk
-        _animator.SetFloat("Speed", 1 * _controller.SneakSpeedAnim, .1f, Time.deltaTime);
         _controller.DoWalk();
 
         // Transitions
@@ -172,7 +182,6 @@ public class PlayerMovementSM : MonoBehaviour
             TransitionToState(PlayerMovement.IDLE);
         else if (_inputs.AskingRunning && _stealthSM.CurrentState != PlayerStealth.SNEAKING)
             TransitionToState(PlayerMovement.SPRINTING);
-
     }
     private void OnFixedUpdateWalking()
     {
@@ -181,9 +190,9 @@ public class PlayerMovementSM : MonoBehaviour
     {
     }
 
-#endregion
+    #endregion
 
-#region State SPRINTING
+    #region State SPRINTING
 
     private void OnEnterSprinting()
     {
@@ -191,8 +200,11 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnUpdateSprinting()
     {
+        ////_animator.SetFloat("Speed", 2, .1f, Time.deltaTime);
+        float i = Mathf.SmoothDamp(_animator.GetLayerWeight(2), 1, ref _layerTest, .2f);
+        _animator.SetLayerWeight(2, i);
+
         // Do Sprint
-        _animator.SetFloat("Speed", 2, .1f, Time.deltaTime);
         _controller.DoSprint();
 
         // Transitions
@@ -206,8 +218,9 @@ public class PlayerMovementSM : MonoBehaviour
     }
     private void OnExitSprinting()
     {
+
     }
 
-#endregion
+    #endregion
 
 }

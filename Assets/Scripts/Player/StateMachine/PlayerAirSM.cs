@@ -211,11 +211,12 @@ public class PlayerAirSM : MonoBehaviour
     {
         _animator.SetBool("Jumping", true);
 
+        // Start Jump
         _controller.StartJump();
     }
     private void OnUpdateJumping()
     {
-        // Do Jump
+        // Do Nothing
         
 
         // Transitions
@@ -242,9 +243,8 @@ public class PlayerAirSM : MonoBehaviour
     }
     private void OnUpdateFalling()
     {
-        // Do Fall
+        // Do Nothing
         
-
         // Transitions
         if (_controller.IsGrounded)
             TransitionToState(PlayerAir.RECOVERY);

@@ -18,6 +18,8 @@ public class PlayerStealthSM : MonoBehaviour
     PlayerController _controller;
     Animator _animator;
 
+    float _layerTest;
+
     #region Public properties
 
     public PlayerStealth CurrentState { get => _currentState; private set => _currentState = value; }
@@ -120,6 +122,10 @@ public class PlayerStealthSM : MonoBehaviour
     }
     private void OnUpdateStanding()
     {
+        // Smooth Damp Layer Transition
+        float i = Mathf.SmoothDamp(_animator.GetLayerWeight(1), 1, ref _layerTest, .2f);
+        _animator.SetLayerWeight(1, i);
+        
         // Do Nothing
 
         // Transitions
@@ -132,7 +138,7 @@ public class PlayerStealthSM : MonoBehaviour
     }
     private void OnExitStanding()
     {
-
+  
     }
 
     #endregion
@@ -141,11 +147,16 @@ public class PlayerStealthSM : MonoBehaviour
 
     private void OnEnterSneaking()
     {
-        _controller.StartSneak();
         _animator.SetBool("SneakingIdle", true);
+        // Start Sneak
+        _controller.StartSneak();
     }
     private void OnUpdateSneaking()
     {
+        // Smooth Damp Layer Transition
+        float i = Mathf.SmoothDamp(_animator.GetLayerWeight(1), 0, ref _layerTest, .2f);
+        _animator.SetLayerWeight(1, i);
+        
         // Do Nothing
 
         // Transitions
@@ -157,8 +168,10 @@ public class PlayerStealthSM : MonoBehaviour
     }
     private void OnExitSneaking()
     {
-        _controller.ExitSneak();
         _animator.SetBool("SneakingIdle", false);
+        
+        // Exit Sneak
+        _controller.ExitSneak();
     }
 
     #endregion
