@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
     public bool IsRecoveryOver { get { return Time.time > _recoveryEndTimer; } }
     public float PlayerVelocityYAxis { get { return _controller.velocity.y; } }
 
-    public float SneakSpeedAnim { get { return _sneakSpeed == 1 ? 1 : -1; } }
+    public float SneakSpeedAnim { get { return _sneakSpeed == 1 ? 1 : .5f; } }
 
     private void Awake()
     {

@@ -136,7 +136,7 @@ public class PlayerMovementSM : MonoBehaviour
     private void OnUpdateIdle()
     {
         // Do Nothing on idle
-        _animator.SetFloat("Speed", 0.1f, .2f, Time.deltaTime);
+        _animator.SetFloat("Speed", 0.1f, .1f, Time.deltaTime);
 
         // Transitions
         if(_inputs.HasMovement)
@@ -164,7 +164,7 @@ public class PlayerMovementSM : MonoBehaviour
     private void OnUpdateWalking()
     {
         // Do walk
-        _animator.SetFloat("Speed", 1 * _controller.SneakSpeedAnim, .2f, Time.deltaTime);
+        _animator.SetFloat("Speed", 1 * _controller.SneakSpeedAnim, .1f, Time.deltaTime);
         _controller.DoWalk();
 
         // Transitions
@@ -192,7 +192,7 @@ public class PlayerMovementSM : MonoBehaviour
     private void OnUpdateSprinting()
     {
         // Do Sprint
-        _animator.SetFloat("Speed", 2, .2f, Time.deltaTime);
+        _animator.SetFloat("Speed", 2, .1f, Time.deltaTime);
         _controller.DoSprint();
 
         // Transitions

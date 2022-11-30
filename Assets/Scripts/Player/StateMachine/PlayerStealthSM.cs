@@ -142,6 +142,7 @@ public class PlayerStealthSM : MonoBehaviour
     private void OnEnterSneaking()
     {
         _controller.StartSneak();
+        _animator.SetBool("SneakingIdle", true);
     }
     private void OnUpdateSneaking()
     {
@@ -157,6 +158,7 @@ public class PlayerStealthSM : MonoBehaviour
     private void OnExitSneaking()
     {
         _controller.ExitSneak();
+        _animator.SetBool("SneakingIdle", false);
     }
 
     #endregion
