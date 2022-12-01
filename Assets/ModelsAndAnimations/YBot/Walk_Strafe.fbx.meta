@@ -572,11 +572,8 @@ ModelImporter:
     rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
-      might lower retargeting quality:\nNote: Activate translation DOF on avatar
-      to improve retargeting quality.\n\t'spine1_loResSpine2' has translation animation
-      that will be discarded.\n\t'spine1_loResSpine3' has translation animation that
-      will be discarded.\n\t'leftArm1_HiResUpperArmTwist' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'leftArm1_HiResLowerArmTwist'
+      might lower retargeting quality:\n\t'leftArm1_HiResUpperArmTwist' is inbetween
+      humanoid transforms and has rotation animation that will be discarded.\n\t'leftArm1_HiResLowerArmTwist'
       is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'rightArm1_HiResUpperArmTwist'
       is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'rightArm1_HiResLowerArmTwist'
       is inbetween humanoid transforms and has rotation animation that will be discarded.\n"
@@ -615,7 +612,111 @@ ModelImporter:
       heightFromFeet: 0
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
+      curves:
+      - name: IkLeftFootWeight
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: -0
+            value: 1.0001416
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.095
+            value: 0.9999982
+            inSlope: 0.02905053
+            outSlope: 0.02905053
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.056405842
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.22999999
+            value: 0.00038003922
+            inSlope: -0.012544569
+            outSlope: -0.012544569
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.04596048
+          - serializedVersion: 3
+            time: 0.59999996
+            value: -0.0000018328428
+            inSlope: -0.0211005
+            outSlope: -0.0211005
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.09400844
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          preInfinity: 3
+          postInfinity: 3
+          rotationOrder: 4
+      - name: IkRightFootWeight
+        curve:
+          serializedVersion: 2
+          curve:
+          - serializedVersion: 3
+            time: 0
+            value: -0.0016389601
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.099999994
+            value: 1
+            inSlope: -0.0044470797
+            outSlope: -0.0044470797
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.555
+            value: 1.0006756
+            inSlope: 0.025694925
+            outSlope: 0.025694925
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.20122243
+          - serializedVersion: 3
+            time: 0.65
+            value: 0.000016480684
+            inSlope: -0.020182056
+            outSlope: -0.020182056
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 1
+            outWeight: 0.26365826
+          - serializedVersion: 3
+            time: 1
+            value: -0.0000018328428
+            inSlope: 0.021961587
+            outSlope: 0.021961587
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.23801786
+            outWeight: 0.13953365
+          preInfinity: 3
+          postInfinity: 3
+          rotationOrder: 4
       events: []
       transformMask:
       - path: 

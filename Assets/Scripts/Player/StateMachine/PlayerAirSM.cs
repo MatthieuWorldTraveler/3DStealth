@@ -159,10 +159,10 @@ public class PlayerAirSM : MonoBehaviour
     private void OnUpdateGrounded()
     {
         // Do Grounded
-        _controller.DoGrounded();
+        ////_controller.DoGrounded();
 
         // Transitions
-        if (_controller.PlayerVelocityYAxis < -.1f)
+        if (_controller.PlayerVelocityYAxis < -.4f)
             TransitionToState(PlayerAir.FALLING);
         else if (_inputs.AskingJumping && _stealthSM.CurrentState != PlayerStealth.SNEAKING)
             TransitionToState(PlayerAir.ANTICIPATING);
@@ -190,7 +190,7 @@ public class PlayerAirSM : MonoBehaviour
         // Do Nothing
 
         // Transitions
-        if (_controller.PlayerVelocityYAxis < -.1f)
+        if (_controller.PlayerVelocityYAxis < -.4f)
             TransitionToState(PlayerAir.FALLING);
         else if (_controller.IsAnticipationOver)
             TransitionToState(PlayerAir.JUMPING);
@@ -222,7 +222,7 @@ public class PlayerAirSM : MonoBehaviour
         // Transitions
         if (_controller.IsGrounded)
             TransitionToState(PlayerAir.RECOVERY);
-        else if (_controller.PlayerVelocityYAxis < -.1f)
+        else if (_controller.PlayerVelocityYAxis < -.4f)
             TransitionToState(PlayerAir.FALLING);
     }
     private void OnFixedUpdateJumping()

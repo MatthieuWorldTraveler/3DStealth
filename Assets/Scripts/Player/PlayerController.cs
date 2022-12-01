@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _moveSpeed = 2f;
     [SerializeField] float _sprintSpeed = 5f;
     [SerializeField] float _sneakMultiplierSpeed = .5f;
+    [SerializeField] float _groundCheckCoolDownDuration = 0.5f;
+    [SerializeField] float _fallSnapMaxHeight = 0.5f;
+    [SerializeField] LayerMask _snappingGroundLayer;
 
     [Header("Jump Manager")]
     [Space(10)]
@@ -29,6 +33,9 @@ public class PlayerController : MonoBehaviour
     // variables
     float _anticipationEndTimer;
     float _recoveryEndTimer;
+    private float _groundCheckCoolDownEndTime;                                  // Variable de timer pour le cooldown de groundcheck
+    private float _landingRecoveryEndTime;                                      // Variable de timer pour la r�cup�ration de l'atterissage
+    private bool _isGrounded;
     float _ySpeed;
     Vector3 moveDir = Vector3.zero;
     float _sneakSpeed = 1f;
@@ -49,7 +56,9 @@ public class PlayerController : MonoBehaviour
     public bool IsGrounded { get { return _controller.isGrounded; } }
     public bool IsAnticipationOver { get { return Time.time > _anticipationEndTimer; } }
     public bool IsRecoveryOver { get { return Time.time > _recoveryEndTimer; } }
-    public float PlayerVelocityYAxis { get { return _controller.velocity.y; } }
+    public float PlayerVelocityYAxis { get { return _ySpeed; } }
+
+    public bool CanCheckGround { get => Time.time >= _groundCheckCoolDownEndTime; }
 
     //public float SneakSpeedAnim { get { return _sneakSpeed == 1 ? 1 : .5f; } } 
     #endregion
@@ -67,7 +76,7 @@ public class PlayerController : MonoBehaviour
     {
         ApplyGravity();
 
-        ApplyAnimator();
+	    ApplyAnimator();
     }
 
     // Manually set the gravity for Player
@@ -75,6 +84,7 @@ public class PlayerController : MonoBehaviour
     {
         _ySpeed += Physics.gravity.y * Time.deltaTime;
         _controller.Move(ApplyMovement());
+        DetectGround();
     }
 
     // SmoothDamp the input for fluid transitions
@@ -104,6 +114,7 @@ public class PlayerController : MonoBehaviour
     public void DoWalk()
     {
         _controller.Move(GetMoveDir(_moveSpeed * _sneakSpeed));
+        DetectGround();
         ApplyPlayerRotation();
     }
 
@@ -111,6 +122,7 @@ public class PlayerController : MonoBehaviour
     public void DoSprint()
     {
         _controller.Move(GetMoveDir(_sprintSpeed));
+        DetectGround();
         ApplyPlayerRotation();
     }
 
@@ -118,12 +130,14 @@ public class PlayerController : MonoBehaviour
     public void StartJump()
     {
         _ySpeed = Mathf.Sqrt(_jumpHeight * -3.0f * Physics.gravity.y);
+        _groundCheckCoolDownEndTime = Time.time + _groundCheckCoolDownDuration;
+        _isGrounded = false;
     }
 
     // Apply ySpeed to stop gravity
     public void DoGrounded()
     {
-        _ySpeed = -.5f;
+        _ySpeed = 0f;
     }
 
     // Initialize Recovery Timer
@@ -176,5 +190,42 @@ public class PlayerController : MonoBehaviour
         Vector3 rotateToward = Quaternion.RotateTowards(_transform.rotation, cameraRotation, _degreeRotationSpeed * Time.deltaTime).eulerAngles;
         rotateToward.z = rotateToward.x = 0;
         _transform.rotation = Quaternion.Euler(rotateToward);
+    }
+
+    private void DetectGround()
+    {
+        // Si le cooldown de detection du sol est terminé
+        if (CanCheckGround)
+        {
+            // On gère le snapping
+            CheckSnapping();
+            // On synchronise notre version locale de variable _isGrounded avec celle du CharacterController
+            _isGrounded = _controller.isGrounded;
+        }
+
+        // Si le CharacterController est en contact avec le sol
+        if (_controller.isGrounded)
+        {
+            // Alors on r�initialise la velocit� verticale artificielle � 0
+            _ySpeed = 0f;
+        }
+    }
+    private void CheckSnapping()
+    {
+        // Si on on vient de quitter le sol
+        if (_isGrounded && !_controller.isGrounded)
+        {
+            // On tire un raycast sur la distance de chute pour savoir si un sol est detecté
+            bool hitGround = Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, _fallSnapMaxHeight + _controller.skinWidth, _snappingGroundLayer);
+            // On dessine le rayon dans la scène pour le Debug
+            Debug.DrawRay(transform.position, Vector3.down * (_fallSnapMaxHeight + _controller.skinWidth), hitGround ? Color.green : Color.red, 1f);
+
+            // Si un sol est detecté
+            if (hitGround)
+            {
+                // On déplace le personnage à la même hauteur que le point touché sur le sol par le raycast
+                _controller.Move(new Vector3(0f, hit.point.y - transform.position.y, 0f));
+            }
+        }
     }
 }
