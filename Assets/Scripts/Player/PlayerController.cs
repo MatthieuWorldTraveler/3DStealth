@@ -70,6 +70,7 @@ public class PlayerController : MonoBehaviour
         _transform = transform;
         _inputs = GetComponent<PlayerInputs>();
         _controller = GetComponent<CharacterController>();
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
@@ -186,10 +187,13 @@ public class PlayerController : MonoBehaviour
     // Apply rotation only when moving
     private void ApplyPlayerRotation()
     {
-        Quaternion cameraRotation = Quaternion.LookRotation(_camera.transform.forward);
-        Vector3 rotateToward = Quaternion.RotateTowards(_transform.rotation, cameraRotation, _degreeRotationSpeed * Time.deltaTime).eulerAngles;
-        rotateToward.z = rotateToward.x = 0;
-        _transform.rotation = Quaternion.Euler(rotateToward);
+        if (!_inputs.FreeView)
+        {
+            Quaternion cameraRotation = Quaternion.LookRotation(_camera.transform.forward);
+            Vector3 rotateToward = Quaternion.RotateTowards(_transform.rotation, cameraRotation, _degreeRotationSpeed * Time.deltaTime).eulerAngles;
+            rotateToward.z = rotateToward.x = 0;
+            _transform.rotation = Quaternion.Euler(rotateToward); 
+        }
     }
 
     private void DetectGround()

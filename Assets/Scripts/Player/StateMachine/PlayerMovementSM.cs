@@ -2,7 +2,7 @@ using UnityEngine;
 
 #region States
 
-public enum PlayerMovement
+public enum PlayerMovementState
 {
     IDLE,
     WALKING,
@@ -13,7 +13,7 @@ public enum PlayerMovement
 
 public class PlayerMovementSM : MonoBehaviour
 {
-    private PlayerMovement _currentState;
+    private PlayerMovementState _currentState;
     PlayerController _controller;
     PlayerInputs _inputs;
     PlayerStealthSM _stealthSM;
@@ -23,7 +23,7 @@ public class PlayerMovementSM : MonoBehaviour
 
     #region Public properties
 
-    public PlayerMovement CurrentState { get => _currentState; private set => _currentState = value; }
+    public PlayerMovementState CurrentState { get => _currentState; private set => _currentState = value; }
 
     #endregion
 
@@ -49,17 +49,17 @@ public class PlayerMovementSM : MonoBehaviour
 
     #region State Machine
 
-    private void OnStateEnter(PlayerMovement state)
+    private void OnStateEnter(PlayerMovementState state)
     {
         switch (state)
         {
-            case PlayerMovement.IDLE:
+            case PlayerMovementState.IDLE:
                 OnEnterIdle();
                 break;
-            case PlayerMovement.WALKING:
+            case PlayerMovementState.WALKING:
                 OnEnterWalking();
                 break;
-            case PlayerMovement.SPRINTING:
+            case PlayerMovementState.SPRINTING:
                 OnEnterSprinting();
                 break;
             default:
@@ -67,17 +67,17 @@ public class PlayerMovementSM : MonoBehaviour
                 break;
         }
     }
-    private void OnStateUpdate(PlayerMovement state)
+    private void OnStateUpdate(PlayerMovementState state)
     {
         switch (state)
         {
-            case PlayerMovement.IDLE:
+            case PlayerMovementState.IDLE:
                 OnUpdateIdle();
                 break;
-            case PlayerMovement.WALKING:
+            case PlayerMovementState.WALKING:
                 OnUpdateWalking();
                 break;
-            case PlayerMovement.SPRINTING:
+            case PlayerMovementState.SPRINTING:
                 OnUpdateSprinting();
                 break;
             default:
@@ -85,17 +85,17 @@ public class PlayerMovementSM : MonoBehaviour
                 break;
         }
     }
-    private void OnStateFixedUpdate(PlayerMovement state)
+    private void OnStateFixedUpdate(PlayerMovementState state)
     {
         switch (state)
         {
-            case PlayerMovement.IDLE:
+            case PlayerMovementState.IDLE:
                 OnFixedUpdateIdle();
                 break;
-            case PlayerMovement.WALKING:
+            case PlayerMovementState.WALKING:
                 OnFixedUpdateWalking();
                 break;
-            case PlayerMovement.SPRINTING:
+            case PlayerMovementState.SPRINTING:
                 OnFixedUpdateSprinting();
                 break;
             default:
@@ -103,17 +103,17 @@ public class PlayerMovementSM : MonoBehaviour
                 break;
         }
     }
-    private void OnStateExit(PlayerMovement state)
+    private void OnStateExit(PlayerMovementState state)
     {
         switch (state)
         {
-            case PlayerMovement.IDLE:
+            case PlayerMovementState.IDLE:
                 OnExitIdle();
                 break;
-            case PlayerMovement.WALKING:
+            case PlayerMovementState.WALKING:
                 OnExitWalking();
                 break;
-            case PlayerMovement.SPRINTING:
+            case PlayerMovementState.SPRINTING:
                 OnExitSprinting();
                 break;
             default:
@@ -121,7 +121,7 @@ public class PlayerMovementSM : MonoBehaviour
                 break;
         }
     }
-    private void TransitionToState(PlayerMovement toState)
+    private void TransitionToState(PlayerMovementState toState)
     {
         OnStateExit(CurrentState);
         CurrentState = toState;
@@ -148,9 +148,9 @@ public class PlayerMovementSM : MonoBehaviour
         if (_inputs.HasMovement)
         {
             if (_inputs.AskingRunning && _stealthSM.CurrentState != PlayerStealth.SNEAKING)
-                TransitionToState(PlayerMovement.SPRINTING);
+                TransitionToState(PlayerMovementState.SPRINTING);
             else
-                TransitionToState(PlayerMovement.WALKING);
+                TransitionToState(PlayerMovementState.WALKING);
         }
     }
     private void OnFixedUpdateIdle()
@@ -179,9 +179,9 @@ public class PlayerMovementSM : MonoBehaviour
 
         // Transitions
         if (!_inputs.HasMovement)
-            TransitionToState(PlayerMovement.IDLE);
+            TransitionToState(PlayerMovementState.IDLE);
         else if (_inputs.AskingRunning && _stealthSM.CurrentState != PlayerStealth.SNEAKING)
-            TransitionToState(PlayerMovement.SPRINTING);
+            TransitionToState(PlayerMovementState.SPRINTING);
     }
     private void OnFixedUpdateWalking()
     {
@@ -209,9 +209,9 @@ public class PlayerMovementSM : MonoBehaviour
 
         // Transitions
         if (!_inputs.HasMovement || _stealthSM.CurrentState == PlayerStealth.SNEAKING)
-            TransitionToState(PlayerMovement.IDLE);
+            TransitionToState(PlayerMovementState.IDLE);
         else if (_inputs.HasMovement && (!_inputs.AskingRunning || _stealthSM.CurrentState == PlayerStealth.SNEAKING))
-            TransitionToState(PlayerMovement.WALKING);
+            TransitionToState(PlayerMovementState.WALKING);
     }
     private void OnFixedUpdateSprinting()
     {

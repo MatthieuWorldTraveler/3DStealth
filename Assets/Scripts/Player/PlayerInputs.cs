@@ -17,10 +17,12 @@ public class PlayerInputs : MonoBehaviour
     private bool _askingRunning;
     private bool _askingJumping;
     private bool _askingSneaking;
+    private bool _freeView;
 
     public bool AskingRunning { get => _askingRunning; }
     public bool AskingJumping { get => _askingJumping; }
     public bool AskingSneaking { get => _askingSneaking; }
+    public bool FreeView { get => _freeView; }
     #endregion
 
     private void Update()
@@ -32,6 +34,7 @@ public class PlayerInputs : MonoBehaviour
         // Stockage inputs
         _askingRunning = Input.GetButton("Run");
         _askingJumping = Input.GetButtonDown("Jump");
-        _askingSneaking = Input.GetButton("Sneak");
+        _askingSneaking = Input.GetButtonDown("Sneak");
+        _freeView = Input.GetButton("FreeView");
     }
 }

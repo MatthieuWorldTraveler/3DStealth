@@ -160,7 +160,7 @@ public class PlayerStealthSM : MonoBehaviour
         // Do Nothing
 
         // Transitions
-        if (!_inputs.AskingSneaking || _playerAirSM.CurrentState == PlayerAir.FALLING)
+        if (_inputs.AskingSneaking || _playerAirSM.CurrentState == PlayerAir.FALLING)
             TransitionToState(PlayerStealth.STANDING);
     }
     private void OnFixedUpdateSneaking()
